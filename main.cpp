@@ -424,20 +424,10 @@ DnsResponse requestData(
     int bytesReceived = recvfrom(client, responseBuffer, BUFFER_SIZE, 0, (sockaddr*)serverAddress, &serverAddressSize);
     
     u_int ipHeaderLength = (((u_char *)responseBuffer)[0] & 0x0F) * 4;
-    cout << ipHeaderLength << endl;
     offset = ipHeaderLength + sizeof(UdpHeader);
 
     memcpy(&response.header, responseBuffer + offset, sizeof(DnsHeader));
     offset += sizeof(DnsHeader);
-
-    cout << bytesReceived << endl;
-    cout << responseBuffer << endl;
-
-    auto h = response.header.ntoh();
-    cout << h.qdCount << endl;
-    cout << h.anCount << endl;
-    cout << h.nsCount << endl;
-    cout << h.arCount << endl;
 
     response.queries = vector<QuerySection>(ntohs(response.header.qdCount));
 
@@ -602,7 +592,7 @@ int main (int argc, char** argv) {
         printUsage(argv[0]);
         return -1;
     }
-    int client = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+    int client = socket(AF_INET, SOCK_RAW, IPPROTO_UDP);
     if (client == -1) {
         perror("socket");
         return -2;
